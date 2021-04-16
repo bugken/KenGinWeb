@@ -1,4 +1,4 @@
-package NetClassGinWeb
+package main
 
 /*
 type Engine struct {
