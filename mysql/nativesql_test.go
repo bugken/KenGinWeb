@@ -1,4 +1,4 @@
-package nativeSQL
+package sql
 
 import (
 	"fmt"
