@@ -19,6 +19,8 @@ func TestFunc(t *testing.T) {
 	//QueryRowDemo()
 	//QueryMultiRowDemo()
 
-	PrepareInsertDemo()
-	PrepareQueryDemo()
+	//PrepareInsertDemo()
+	//PrepareQueryDemo()
+
+	TransactionDemo()
 }
