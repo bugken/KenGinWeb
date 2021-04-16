@@ -3,7 +3,8 @@ package nativeSQL
 import (
 	"database/sql"
 	"fmt"
-	//_ 是包引用操作,匿名导入,只会执行包下各模块中的init方法,并不会真正的导入包,所以不可以调用包内的其他方法.
+	//_ 是包引用操作,匿名导入,只会执行包下各模块中的init方法,并不会真正的导入包,
+	//所以不可以调用包内的其他方法.
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -73,4 +74,101 @@ func QueryMultiRowDemo() {
 		}
 		fmt.Printf("id:%d name:%s age:%d\n", u.id, u.name, u.age)
 	}
+}
+
+// 插入数据
+func InsertRowDemo() {
+	sqlStr := "insert into user(name, age) values (?,?)"
+	ret, err := db.Exec(sqlStr, "王五", 38)
+	if err != nil {
+		fmt.Printf("insert failed, err:%v\n", err)
+		return
+	}
+	theID, err := ret.LastInsertId() // 新插入数据的id
+	if err != nil {
+		fmt.Printf("get lastinsert ID failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+}
+
+// 更新数据
+func UpdateRowDemo() {
+	sqlStr := "update user set age=? where id = ?"
+	ret, err := db.Exec(sqlStr, 39, 3)
+	if err != nil {
+		fmt.Printf("update failed, err:%v\n", err)
+		return
+	}
+	n, err := ret.RowsAffected() // 操作影响的行数
+	if err != nil {
+		fmt.Printf("get RowsAffected failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("update success, affected rows:%d\n", n)
+}
+
+// 删除数据
+func DeleteRowDemo() {
+	sqlStr := "delete from user where id = ?"
+	ret, err := db.Exec(sqlStr, 3)
+	if err != nil {
+		fmt.Printf("delete failed, err:%v\n", err)
+		return
+	}
+	n, err := ret.RowsAffected() // 操作影响的行数
+	if err != nil {
+		fmt.Printf("get RowsAffected failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("delete success, affected rows:%d\n", n)
+}
+
+// 预处理查询示例
+func PrepareQueryDemo() {
+	sqlStr := "select id, name, age from user where id > ?"
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Printf("prepare failed, err:%v\n", err)
+		return
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query(0)
+	if err != nil {
+		fmt.Printf("query failed, err:%v\n", err)
+		return
+	}
+	defer rows.Close()
+	// 循环读取结果集中的数据
+	for rows.Next() {
+		var u user
+		err := rows.Scan(&u.id, &u.name, &u.age)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return
+		}
+		fmt.Printf("id:%d name:%s age:%d\n", u.id, u.name, u.age)
+	}
+}
+
+// 预处理插入示例
+func PrepareInsertDemo() {
+	sqlStr := "insert into user(name, age) values (?,?)"
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Printf("prepare failed, err:%v\n", err)
+		return
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec("小王子", 18)
+	if err != nil {
+		fmt.Printf("insert failed, err:%v\n", err)
+		return
+	}
+	_, err = stmt.Exec("沙河娜扎", 18)
+	if err != nil {
+		fmt.Printf("insert failed, err:%v\n", err)
+		return
+	}
+	fmt.Println("insert success.")
 }

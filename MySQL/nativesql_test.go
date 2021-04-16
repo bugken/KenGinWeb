@@ -13,6 +13,12 @@ func TestFunc(t *testing.T) {
 	}
 	fmt.Printf("connect db success.\n")
 
-	QueryRowDemo()
-	QueryMultiRowDemo()
+	//InsertRowDemo()
+	//DeleteRowDemo()
+	//UpdateRowDemo()
+	//QueryRowDemo()
+	//QueryMultiRowDemo()
+
+	PrepareInsertDemo()
+	PrepareQueryDemo()
 }
