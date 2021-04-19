@@ -4,7 +4,7 @@ import (
 	"NetClassGinWeb/webginbase/dao/mysql"
 	"NetClassGinWeb/webginbase/dao/redis"
 	"NetClassGinWeb/webginbase/logger"
-	"NetClassGinWeb/webginbase/routes"
+	"NetClassGinWeb/webginbase/routers"
 	"NetClassGinWeb/webginbase/settings"
 	"context"
 	"fmt"
@@ -50,7 +50,7 @@ func main() {
 	defer redis.Close()
 
 	// 5.注册路由
-	r := routes.Setup()
+	r := routers.Setup()
 
 	// 6.启动服务(优雅关机/优雅重启)
 	srv := &http.Server{

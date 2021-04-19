@@ -14,9 +14,11 @@ var Conf = new(AppConfig)
 type (
 	AppConfig struct {
 		Name         string `mapstructure:"name"`
-		Mode         string `mapstructure:"mod"`
+		Mode         string `mapstructure:"mode"`
 		Version      string `mapstructure:"version"`
 		Port         int    `mapstructure:"port"`
+		StartTime    string `mapstructure:"start_time"`
+		MachineID    int64  `mapstructure:"machine_id"`
 		*LogConfig   `mapstructure:"log"`
 		*MySQLConfig `mapstructure:"mysql"`
 		*RedisConfig `mapstructure:"redis"`
@@ -49,10 +51,10 @@ type (
 	}
 )
 
-func Init2() (err error) {
+func Init() (err error) {
 	viper.SetConfigName("config")         // 指定配置文件
 	viper.SetConfigType("yaml")           // 指定配置文件
-	viper.AddConfigPath("../")            // 指定查找配置文件的路径
+	viper.AddConfigPath("./bluebell")     // 指定查找配置文件的路径
 	if viper.ReadInConfig(); err != nil { // 读取配置信息
 		return
 	}
