@@ -1,5 +1,9 @@
 这是一个网课练习代码
 网课地址:https://study.163.com/course/courseMain.htm?courseId=1210171207&from=study
+后端代码地址:https://github.com/Q1mi/goweb_pro/tree/master/bluebell
+前段代码地址:https://github.com/Q1mi/bluebell/tree/master/bluebell_frontend
+
 目录说明
 webginbase:这是一个基于CLD模型的gin web脚手架
-component/mysql/redis：这三个文件夹是web编程中常用到的组件
+component/mysql/redis:这三个文件夹是web编程中常用到的组件
+bluebell:是一个简单的练手项目,里面包含了Gin的常见用法和常见的Web问题解决方案
