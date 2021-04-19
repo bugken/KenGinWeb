@@ -22,13 +22,13 @@ import (
 //Go Web开发通用的脚手架模板
 func main() {
 	// 1.加载配置
-	if err := settings.Init(); err != nil {
+	if err := settings.Init2(); err != nil {
 		fmt.Printf("config init failed, error: %s\n", err)
 		return
 	}
 
 	// 2.初始化日志
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(settings.Conf.LogConfig); err != nil {
 		fmt.Printf("logger init failed, error: %s\n", err)
 		return
 	}
@@ -36,14 +36,14 @@ func main() {
 	zap.L().Debug("logger init success.")
 
 	// 3.初始化MySQL连接
-	if err := mysql.Init(); err != nil {
+	if err := mysql.Init(settings.Conf.MySQLConfig); err != nil {
 		zap.L().Error("mysql init failed, error: %s\n", zap.Error(err))
 		return
 	}
 	defer mysql.Close()
 
 	// 4.初始化Redis连接
-	if err := redis.Init(); err != nil {
+	if err := redis.Init(settings.Conf.RedisConfig); err != nil {
 		zap.L().Error("redis init failed, error: %s\n", zap.Error(err))
 		return
 	}

@@ -1,7 +1,8 @@
 app:
   name: "web_app"
-  mod: "dev"
+  mode: "dev"
   port: 8080
+  version: "1.2.5"
 
 log:
   level: "debug"
@@ -24,6 +25,6 @@ redis:
   port: 6379
   password: ""
   db_name: 0
-  PoolSize: 100
+  pool_size: 100
 
 
