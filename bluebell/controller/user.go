@@ -47,3 +47,38 @@ func SignUpHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": "success"})
 	return
 }
+
+func LoginHandler(c *gin.Context) {
+	// 获取请求参数以及参数校验
+	p := new(models.ParamLogin)
+	if err := c.ShouldBindJSON(p); err != nil {
+		zap.L().Error("[LoginHandler]请求参数错误", zap.Error(err))
+		// 获取validator.ValidationErrors类型的errors
+		errs, ok := err.(validator.ValidationErrors)
+		if !ok {
+			// 非validator.ValidationErrors类型错误直接返回
+			c.JSON(http.StatusOK, gin.H{
+				"msg": err.Error(),
+			})
+			return
+		}
+		// validator.ValidationErrors类型错误则进行翻译
+		c.JSON(http.StatusOK, gin.H{
+			"msg": removeTopStruct(errs.Translate(trans)),
+		})
+		return
+	}
+
+	// 业务逻辑处理
+	if err := logic.Login(p); err != nil {
+		zap.L().Error("[LoginHandler]登录失败", zap.String("username", p.UserName), zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "登录失败",
+		})
+		return
+	}
+
+	//返回响应
+	c.JSON(http.StatusOK, gin.H{"msg": "success"})
+	return
+}

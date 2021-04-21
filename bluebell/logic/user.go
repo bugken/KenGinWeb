@@ -27,3 +27,11 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	// 4.保存到数据库
 	return mysql.InsertUser(u)
 }
+
+func Login(p *models.ParamLogin) (err error) {
+	user := &models.User{
+		UserName: p.UserName,
+		Password: p.Password,
+	}
+	return mysql.Login(user)
+}

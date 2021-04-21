@@ -3,6 +3,7 @@ package mysql
 import (
 	"NetClassGinWeb/bluebell/models"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"errors"
 )
@@ -39,4 +40,23 @@ func encryptPassword(raw string) string {
 	h.Write([]byte(secret))
 
 	return hex.EncodeToString(h.Sum([]byte(raw)))
+}
+
+func Login(user *models.User) (err error) {
+	oPassword := user.Password
+	sqlStr := "select user_id, username, password from user where username = ?"
+	if err = db.Get(user, sqlStr, user.UserName); err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("用户不存在")
+		}
+		return
+	}
+
+	// 判断密码是否正确
+	password := encryptPassword(oPassword)
+	if password != user.Password {
+		return errors.New("密码错误,登录失败")
+	}
+
+	return
 }
