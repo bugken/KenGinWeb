@@ -1,9 +1,10 @@
 package controller
 
 import (
+	"NetClassGinWeb/bluebell/dao/mysql"
 	"NetClassGinWeb/bluebell/logic"
 	"NetClassGinWeb/bluebell/models"
-	"net/http"
+	"errors"
 
 	"go.uber.org/zap"
 
@@ -22,29 +23,27 @@ func SignUpHandler(c *gin.Context) {
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			// 非validator.ValidationErrors类型错误直接返回
-			c.JSON(http.StatusOK, gin.H{
-				"msg": err.Error(),
-			})
+			ResponseError(c, CodeInvalidParam)
 			return
 		}
 		// validator.ValidationErrors类型错误则进行翻译
-		c.JSON(http.StatusOK, gin.H{
-			"msg": removeTopStruct(errs.Translate(trans)),
-		})
+		ResponseErrorWithMsg(c, CodeInvalidParam, removeTopStruct(errs.Translate(trans)))
 		return
 	}
 
 	// 2.处理业务逻辑
 	if err := logic.SignUp(p); err != nil {
 		zap.L().Error("[SignUpHandler]注册失败", zap.Error(err))
-		c.JSON(http.StatusOK, gin.H{
-			"msg": "注册失败",
-		})
+		if errors.Is(err, mysql.ErrorUserExist) {
+			ResponseError(c, CodeUserExist)
+			return
+		}
+		ResponseError(c, CodeServerBusy)
 		return
 	}
 
 	// 3.返回响应
-	c.JSON(http.StatusOK, gin.H{"msg": "success"})
+	ResponseSuccess(c, gin.H{"msg": "success"})
 	return
 }
 
@@ -57,28 +56,26 @@ func LoginHandler(c *gin.Context) {
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			// 非validator.ValidationErrors类型错误直接返回
-			c.JSON(http.StatusOK, gin.H{
-				"msg": err.Error(),
-			})
+			ResponseError(c, CodeInvalidParam)
 			return
 		}
 		// validator.ValidationErrors类型错误则进行翻译
-		c.JSON(http.StatusOK, gin.H{
-			"msg": removeTopStruct(errs.Translate(trans)),
-		})
+		ResponseErrorWithMsg(c, CodeInvalidParam, removeTopStruct(errs.Translate(trans)))
 		return
 	}
 
 	// 业务逻辑处理
 	if err := logic.Login(p); err != nil {
 		zap.L().Error("[LoginHandler]登录失败", zap.String("username", p.UserName), zap.Error(err))
-		c.JSON(http.StatusOK, gin.H{
-			"msg": "登录失败",
-		})
+		if errors.Is(err, mysql.ErrorUserNotExist) {
+			ResponseError(c, CodeUserNotExist)
+			return
+		}
+		ResponseError(c, CodeInvalidPassword)
 		return
 	}
 
 	//返回响应
-	c.JSON(http.StatusOK, gin.H{"msg": "success"})
+	ResponseSuccess(c, gin.H{"msg": "success"})
 	return
 }

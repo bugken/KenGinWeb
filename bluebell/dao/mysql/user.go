@@ -8,7 +8,13 @@ import (
 	"errors"
 )
 
-var secret = "GinWeb"
+const secret = "GinWeb"
+
+var (
+	ErrorUserExist       = errors.New("用户已存在")
+	ErrorUserNotExist    = errors.New("用户不已存在")
+	ErrorInvalidPassword = errors.New("密码错误")
+)
 
 // CheckUserExist 检查用户是否存在
 func CheckUserExist(userName string) (err error) {
@@ -18,7 +24,7 @@ func CheckUserExist(userName string) (err error) {
 		return err
 	}
 	if count > 0 {
-		return errors.New("用户已存在")
+		return ErrorUserExist
 	}
 
 	return
@@ -47,7 +53,7 @@ func Login(user *models.User) (err error) {
 	sqlStr := "select user_id, username, password from user where username = ?"
 	if err = db.Get(user, sqlStr, user.UserName); err != nil {
 		if err == sql.ErrNoRows {
-			return errors.New("用户不存在")
+			return ErrorUserNotExist
 		}
 		return
 	}
@@ -55,7 +61,7 @@ func Login(user *models.User) (err error) {
 	// 判断密码是否正确
 	password := encryptPassword(oPassword)
 	if password != user.Password {
-		return errors.New("密码错误,登录失败")
+		return ErrorInvalidPassword
 	}
 
 	return
