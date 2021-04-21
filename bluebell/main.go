@@ -1,6 +1,7 @@
 package main
 
 import (
+	"NetClassGinWeb/bluebell/controller"
 	"NetClassGinWeb/bluebell/dao/mysql"
 	"NetClassGinWeb/bluebell/dao/redis"
 	"NetClassGinWeb/bluebell/logger"
@@ -56,12 +57,18 @@ func main() {
 		return
 	}
 
+	// 初始化Gin框架内的校验器的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		zap.L().Error("validator trans init failed, error: %s\n", zap.Error(err))
+		return
+	}
+
 	// 6.注册路由
 	r := routes.Setup()
 
 	// 7.启动服务(优雅关机/优雅重启)
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", viper.GetString("app.port")),
+		Addr:    fmt.Sprintf(":%s", viper.GetString("port")),
 		Handler: r,
 	}
 
