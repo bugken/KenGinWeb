@@ -47,6 +47,7 @@ func SignUpHandler(c *gin.Context) {
 	return
 }
 
+// LoginHandler 处理登陆请求的函数
 func LoginHandler(c *gin.Context) {
 	// 获取请求参数以及参数校验
 	p := new(models.ParamLogin)
