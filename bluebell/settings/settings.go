@@ -54,7 +54,7 @@ type (
 func Init() (err error) {
 	viper.SetConfigName("config")         // 指定配置文件
 	viper.SetConfigType("yaml")           // 指定配置文件
-	viper.AddConfigPath("./bluebell")     // 指定查找配置文件的路径
+	viper.AddConfigPath(".")              // 指定查找配置文件的路径
 	if viper.ReadInConfig(); err != nil { // 读取配置信息
 		return
 	}

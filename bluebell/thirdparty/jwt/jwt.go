@@ -9,7 +9,7 @@ import (
 
 const TokenExpireDuration = time.Hour * 2
 
-var JWTSecret = []byte("DoYouRemember")
+var SecretJWT = []byte("DoYouRemember")
 
 // MyClaims 自定义声明结构体并内嵌jwt.StandardClaims
 // jwt包自带的jwt.StandardClaims只包含了官方字段
@@ -37,7 +37,7 @@ func GenToken(username string, userID int64) (string, error) {
 	// 使用指定的签名方法创建签名对象
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	// 使用指定的secret签名并获得完整的编码后的字符串token
-	return token.SignedString(JWTSecret)
+	return token.SignedString(SecretJWT)
 }
 
 // ParseToken 解析JWT
@@ -45,7 +45,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 	var mc = new(MyClaims)
 	// 解析token
 	token, err := jwt.ParseWithClaims(tokenString, mc, func(token *jwt.Token) (i interface{}, err error) {
-		return JWTSecret, nil
+		return SecretJWT, nil
 	})
 	if err != nil {
 		return nil, err
