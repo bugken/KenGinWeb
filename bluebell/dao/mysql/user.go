@@ -5,16 +5,9 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"errors"
 )
 
 const secret = "GinWeb"
-
-var (
-	ErrorUserExist       = errors.New("用户已存在")
-	ErrorUserNotExist    = errors.New("用户不已存在")
-	ErrorInvalidPassword = errors.New("密码错误")
-)
 
 // CheckUserExist 检查用户是否存在
 func CheckUserExist(userName string) (err error) {
@@ -24,7 +17,7 @@ func CheckUserExist(userName string) (err error) {
 		return err
 	}
 	if count > 0 {
-		return ErrorUserExist
+		return ErrUserExist
 	}
 
 	return
@@ -41,6 +34,7 @@ func InsertUser(user *models.User) (err error) {
 	return
 }
 
+// encryptPassword 加密密码
 func encryptPassword(raw string) string {
 	h := md5.New()
 	h.Write([]byte(secret))
@@ -48,12 +42,13 @@ func encryptPassword(raw string) string {
 	return hex.EncodeToString(h.Sum([]byte(raw)))
 }
 
+// Login 登录
 func Login(user *models.User) (err error) {
 	oPassword := user.Password
 	sqlStr := "select user_id, username, password from user where username = ?"
 	if err = db.Get(user, sqlStr, user.UserName); err != nil {
 		if err == sql.ErrNoRows {
-			return ErrorUserNotExist
+			return ErrUserNotExist
 		}
 		return
 	}
@@ -61,8 +56,18 @@ func Login(user *models.User) (err error) {
 	// 判断密码是否正确
 	password := encryptPassword(oPassword)
 	if password != user.Password {
-		return ErrorInvalidPassword
+		return ErrInvalidPassword
 	}
+
+	return
+}
+
+// GetUserByID 根据ID获取用户信息
+func GetUserByID(userID int64) (user *models.User, err error) {
+	user = new(models.User)
+	sqlStr := `select user_id, username, email, gender, create_time
+ 				from user where user_id = ?`
+	err = db.Select(user, sqlStr, userID)
 
 	return
 }

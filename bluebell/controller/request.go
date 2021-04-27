@@ -13,8 +13,8 @@ const (
 	ContextUserNameKey = "userName"
 )
 
-// GetCurrentUser 获取当期用户的用户ID
-func GetCurrentUser(c *gin.Context) (userId int64, err error) {
+// GetCurrentUserID 获取当期用户的用户ID
+func GetCurrentUserID(c *gin.Context) (userId int64, err error) {
 	v, ok := c.Get(ContextUserIDKey)
 	if !ok {
 		err = ErrorUserNotLogin
