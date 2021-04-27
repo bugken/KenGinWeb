@@ -5,6 +5,7 @@ import (
 	"NetClassGinWeb/bluebell/logic"
 	"NetClassGinWeb/bluebell/models"
 	"errors"
+	"fmt"
 
 	"go.uber.org/zap"
 
@@ -66,7 +67,7 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	// 业务逻辑处理
-	token, err := logic.Login(p)
+	user, err := logic.Login(p)
 	if err != nil {
 		zap.L().Error("[LoginHandler]登录失败", zap.String("username", p.UserName), zap.Error(err))
 		if errors.Is(err, mysql.ErrUserNotExist) {
@@ -78,6 +79,10 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	//返回响应
-	ResponseSuccess(c, token)
+	ResponseSuccess(c, gin.H{
+		"user_id":   fmt.Sprintf("%d", user.UserID),
+		"user_name": user.UserName,
+		"token":     user.Token,
+	})
 	return
 }
