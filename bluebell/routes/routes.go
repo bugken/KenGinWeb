@@ -31,12 +31,16 @@ func Setup(mode string) *gin.Engine {
 		v1 := r.Group("/api/v1")
 		// 接下来的路由使用JWT认证中间件
 		v1.Use(middleware.JWTAuthMiddleware())
+
 		// 获取community路由
 		v1.GET("/community", controller.CommunityHandler)
 		v1.GET("/community/:id", controller.CommunityDetailHandler)
 
+		// 帖子相关接口
 		v1.POST("/post", controller.CreatePostHandler)
 		v1.GET("/post/:id", controller.GetPostDetailHandler)
+		v1.GET("/posts", controller.GetPostListHandler)
+
 	}
 
 	return r

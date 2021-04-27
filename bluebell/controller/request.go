@@ -2,6 +2,9 @@ package controller
 
 import (
 	"errors"
+	"strconv"
+
+	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,4 +30,28 @@ func GetCurrentUserID(c *gin.Context) (userId int64, err error) {
 		return
 	}
 	return userID, nil
+}
+
+// GetPageInfo 获取页码信息
+func GetPageInfo(c *gin.Context) (int64, int64) {
+	pageSizeStr := c.Query("pageSize")
+	pageIndexStr := c.Query("pageIndex")
+
+	var (
+		pageSize  int64
+		pageIndex int64
+		err       error
+	)
+	pageSize, err = strconv.ParseInt(pageSizeStr, 10, 64)
+	if err != nil {
+		zap.L().Error("[GetPageInfo]ParseInt error", zap.String("page size", pageIndexStr), zap.Error(err))
+		pageSize = 10
+	}
+	pageIndex, err = strconv.ParseInt(pageIndexStr, 10, 64)
+	if err != nil {
+		zap.L().Error("[GetPageInfo]ParseInt error", zap.String("page index", pageIndexStr), zap.Error(err))
+		pageIndex = 1
+	}
+
+	return pageSize, pageIndex
 }
