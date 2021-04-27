@@ -18,7 +18,7 @@ type (
 	Response struct {
 		Code ResCode     `json:"code"`
 		Msg  interface{} `json:"msg"`
-		Data interface{} `json:"data"`
+		Data interface{} `json:"data,omitempty"`
 	}
 )
 

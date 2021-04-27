@@ -2,11 +2,9 @@ package redis
 
 import (
 	"NetClassGinWeb/bluebell/settings"
-	"context"
 	"fmt"
-	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis"
 )
 
 var (
@@ -22,10 +20,10 @@ func Init(cfg *settings.RedisConfig) (err error) {
 		PoolSize: cfg.PoolSize, // 连接池大小
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	//defer cancel()
 
-	_, err = rdb.Ping(ctx).Result()
+	_, err = rdb.Ping().Result()
 	return
 }
 
