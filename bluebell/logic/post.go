@@ -2,6 +2,7 @@ package logic
 
 import (
 	"NetClassGinWeb/bluebell/dao/mysql"
+	"NetClassGinWeb/bluebell/dao/redis"
 	"NetClassGinWeb/bluebell/models"
 	"NetClassGinWeb/bluebell/thirdparty/snowflake"
 
@@ -13,7 +14,16 @@ func CreatePost(post *models.Post) (err error) {
 	post.ID = snowflake.GenID()
 
 	// 保存到数据库
-	return mysql.InsertPost(post)
+	if err = mysql.InsertPost(post); err != nil {
+		return
+	}
+
+	// 更新redis
+	if err = redis.CreatePost(post.ID); err != nil {
+		return
+	}
+
+	return
 }
 
 func GetPostByID(postID int64) (data *models.APIPostDetail, err error) {
