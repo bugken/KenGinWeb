@@ -79,3 +79,31 @@ func GetPostListHandler(c *gin.Context) {
 	ResponseSuccess(c, data)
 	return
 }
+
+// GetPostListHandler升级版获取帖子列表函数
+// 根据前端(时间或者分数)传来的参数获取帖列表
+func GetPostListHandler2(c *gin.Context) {
+	// 获取参数
+	p := &models.ParamPostList{
+		Page:  1,
+		Size:  2,
+		Order: models.OrderTime,
+	}
+	if err := c.ShouldBindQuery(p); err != nil {
+		zap.L().Error("[GetPostListHandler2]ShouldBindQuery error", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+
+	// 获取数据
+	data, err := logic.GetPostList2(p)
+	if err != nil {
+		zap.L().Error("[GetPostListHandler]GetPostList error", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+
+	// 返回响应
+	ResponseSuccess(c, data)
+	return
+}

@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"NetClassGinWeb/bluebell/models"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -24,4 +25,19 @@ func CreatePost(postID int64) (err error) {
 	_, err = pipeline.Exec()
 
 	return
+}
+
+func GetPostIDsInOrder(p *models.ParamPostList) ([]string, error) {
+	// 从redis获取IDs
+	key := getRedisKey(KeyPostTimeZSet)
+	if p.Order == models.OrderScore {
+		key = getRedisKey(KeyPostTimeZSet)
+	}
+
+	// 确定查询的索引起始点
+	start := (p.Page - 1) * p.Size
+	end := start + p.Size - 1
+
+	// 使用RevRange查询
+	return rdb.ZRevRange(key, start, end).Result()
 }
