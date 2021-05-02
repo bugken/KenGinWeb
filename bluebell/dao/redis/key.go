@@ -7,6 +7,7 @@ const (
 	KeyPostTimeZSet        = "post:time"
 	KeyPostScoreZSet       = "post:score"
 	KeyPostVotedZSetPrefix = "post:voted" // 记录用户投票类型,参数为帖子post_id
+	KeyCommunitySetPrefix  = "community:" // 保存每个分区下的帖子
 )
 
 // 给redis key加上前缀
