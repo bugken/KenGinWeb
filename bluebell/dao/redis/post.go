@@ -41,3 +41,32 @@ func GetPostIDsInOrder(p *models.ParamPostList) ([]string, error) {
 	// 使用RevRange查询
 	return rdb.ZRevRange(key, start, end).Result()
 }
+
+// GetPostVoteData 根据IDs查询每篇帖子的数据
+func GetPostVoteData(ids []string) (data []int64, err error) {
+	//data = make([]int64, 0, len(ids))
+	//for _, id := range ids {
+	//	key := getRedisKey(KeyPostVotedZSetPrefix + id)
+	//	count := rdb.ZCount(key, "1", "1").Val()
+	//	data = append(data, count)
+	//}
+
+	// 使用pipeline一次发送多条命令减少RTT
+	pipeline := rdb.Pipeline()
+	for _, id := range ids {
+		key := getRedisKey(KeyPostVotedZSetPrefix + id)
+		pipeline.ZCount(key, "1", "1")
+	}
+	cmders, err := pipeline.Exec()
+	if err != nil {
+		return
+	}
+
+	data = make([]int64, 0, len(ids))
+	for _, cmder := range cmders {
+		v := cmder.(*redis.IntCmd).Val()
+		data = append(data, v)
+	}
+
+	return
+}
