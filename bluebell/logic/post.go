@@ -144,7 +144,7 @@ func GetPostList2(p *models.ParamPostList) (data []*models.APIPostDetail, err er
 	return
 }
 
-func GetPostCommunityList(p *models.ParamCommunityPostList) (data []*models.APIPostDetail, err error) {
+func GetPostCommunityList(p *models.ParamPostList) (data []*models.APIPostDetail, err error) {
 	// 根据参数去redis获取帖子id列表
 	ids, err := redis.GetCommunityPostIDsInOrder(p)
 	if err != nil {
@@ -190,6 +190,24 @@ func GetPostCommunityList(p *models.ParamCommunityPostList) (data []*models.APIP
 			Post:            v,
 			CommunityDetail: community,
 		})
+	}
+	return
+}
+
+// GetPostListNew  将两个查询帖子列表逻辑合二为一的函数
+func GetPostListNew(p *models.ParamPostList) (data []*models.APIPostDetail, err error) {
+	// 根据请求参数的不同，执行不同的逻辑。
+	if p.CommunityID == 0 {
+		// 查所有
+		data, err = GetPostList2(p)
+	} else {
+		// 根据社区id查询
+		data, err = GetPostCommunityList(p)
+	}
+	if err != nil {
+		zap.L().Error("GetPostListNew failed", zap.Error(err),
+			zap.Int64("CommunityID", p.CommunityID))
+		return nil, err
 	}
 	return
 }
